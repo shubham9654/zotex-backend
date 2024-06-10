@@ -18,7 +18,6 @@ const getAllProducts = async (req, res) => {
 
 const addProduct = async (req, res) => {
   try {
-    console.log(req.body, 'dfdfdf')
     const newProduct = new Product({
       ...req.body,
     })

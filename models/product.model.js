@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
@@ -11,9 +11,16 @@ const productSchema = new mongoose.Schema(
       required: false,
     },
     image: {
-      type: String,
+      type: Array,
       required: false,
     },
+    categories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
+    ],
     price: {
       mrp: {
         type: Number,
@@ -36,8 +43,8 @@ const productSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['show', 'hide'],
-      default: 'show',
+      enum: ["show", "hide"],
+      default: "show",
     },
   },
   {
