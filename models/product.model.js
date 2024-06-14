@@ -10,10 +10,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    image: {
-      type: Array,
-      required: false,
-    },
+    images: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Image",
+      },
+    ],
     categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
