@@ -3,17 +3,27 @@ const Product = require("../models/product.model");
 
 const getAllProducts = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, page, limit } = req.query;
     const queryObject = {};
     if (search) {
       queryObject.$or = [
-        { 'name': { $regex: `${search}`, $options: 'i' } },
-        { 'description': { $regex: `${search}`, $options: 'i' } },
+        { name: { $regex: `${search}`, $options: "i" } },
+        { description: { $regex: `${search}`, $options: "i" } },
       ];
     }
+    const pages = Number(page) || 1;
+    const limits = Number(limit) || 10;
+    const skip = (pages - 1) * limits;
+
     const totalCount = await Product.countDocuments(queryObject);
     const products = await Product.find(queryObject)
-      .populate({ path: "categories", select: "_id name" })
+      .populate({
+        path: "categories",
+        select: "_id name",
+      })
+      .skip(skip)
+      .limit(limits);
+
     res.json({
       success: true,
       data: products,
