@@ -95,19 +95,21 @@ const addProduct = async (req, res) => {
 const updateProductById = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { name, description, mrp, sellingPrice } = req.body;
-    const { buffer, mimetype, originalname } = req.file;
+    const { name, description, mrp, sellingPrice, imageId } = req.body;
+    // const { buffer, mimetype, originalname } = req.file;
+    // const image = new ImageModal({
+    //   data: buffer,
+    //   contentType: mimetype,
+    //   originalName: originalname,
+    // });
+    // await image.save();
 
-    const image = new ImageModal({
-      data: buffer,
-      contentType: mimetype,
-      originalName: originalname,
-    });
-    await image.save();
-
-
-    const updateFields = req.body;
-    const product = await Product.findByIdAndUpdate(productId, updateFields, { new: true });
+    const product = await Product.findByIdAndUpdate(productId, {
+      name,
+      description,
+      price: { mrp, sellingPrice },
+      images: [imageId],
+    }, { new: true });
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
