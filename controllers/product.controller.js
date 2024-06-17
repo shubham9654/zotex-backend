@@ -21,6 +21,7 @@ const getAllProducts = async (req, res) => {
         path: "categories",
         select: "_id name",
       })
+      .sort({ _id: -1 })
       .skip(skip)
       .limit(limits);
 
@@ -29,6 +30,27 @@ const getAllProducts = async (req, res) => {
       data: products,
       totalCount,
       message: "all products fetch successfully...",
+    });
+  } catch (err) {
+    res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+const getProductById = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({
+      success: true,
+      data: product,
+      message: "Product found...",
     });
   } catch (err) {
     res.status(500).send({
@@ -60,7 +82,60 @@ const addProduct = async (req, res) => {
     res.json({
       success: true,
       data: newProduct,
-      message: "products created successfully...",
+      message: "Product successfully created...",
+    });
+  } catch (err) {
+    res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+const updateProductById = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { name, description, mrp, sellingPrice } = req.body;
+    const { buffer, mimetype, originalname } = req.file;
+
+    const image = new ImageModal({
+      data: buffer,
+      contentType: mimetype,
+      originalName: originalname,
+    });
+    await image.save();
+
+
+    const updateFields = req.body;
+    const product = await Product.findByIdAndUpdate(productId, updateFields, { new: true });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({
+      success: true,
+      data: product,
+      message: "Product successfully updated...",
+    });
+  } catch (err) {
+    res.status(500).send({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+const deleteProductById = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({
+      success: true,
+      message: "Product successfully deleted...",
     });
   } catch (err) {
     res.status(500).send({
@@ -73,4 +148,7 @@ const addProduct = async (req, res) => {
 module.exports = {
   getAllProducts,
   addProduct,
+  getProductById,
+  updateProductById,
+  deleteProductById
 };
